@@ -123,7 +123,7 @@ add_filter('template_include', 'load_custom_templates');
 
 function my_custom_enqueue_scripts() {
     wp_enqueue_script('custom-js', plugin_dir_url(__FILE__) . 'js/customjs.js', array('jquery'), null, true);
-    wp_localize_script('custom-js', 'ajaxs_obj', array('ajax_url' => admin_url('admin-ajax.php'),'nonce'    => wp_create_nonce('my_custom_nonce')));
+    wp_localize_script('custom-js', 'my_object', array('ajax_url' => admin_url('admin-ajax.php'),'nonce'    => wp_create_nonce('my_custom_nonce')));
 }
 add_action('wp_enqueue_scripts', 'my_custom_enqueue_scripts'); // For frontend
 
@@ -133,34 +133,74 @@ add_action('wp_enqueue_scripts', 'my_custom_enqueue_scripts'); // For frontend
 add_action('wp_ajax_resource_data', 'resource_data');
 add_action('wp_ajax_nopriv_resource_data', 'resource_data');
 function resource_data(){
-    $resource_type = $_request['resource_type'];
-    $resource_topic = $_request['resource_topic'];
+    $resource_type = $_REQUEST['resource_type'];
+    $resource_topic = $_REQUEST['resource_topic'];
+    $search = $_REQUEST['search'];
 
-    $tax = array('relation'=>'AND');
-    $res_arr = array();
+    $tax = array('relation'=>'OR');
+
+    $rty = array();
+    //$rto = array();
 
     if($resource_type!=""){
         $tax[] = array(
-            'taxonomy'=>"resource_type",
+            'taxonomy'=> 'resource_type',
+            'terms'=> $resource_type,
             'field'=>'slug',
-            'terms'=>$resource_type,
         );
-        array_push($tax,$res_arr);
+        array_push($rty,$tax);
+    }
+
+    if($resource_topic!=""){
+        $tax[] = array(
+            'taxonomy'=> 'resource_topic',
+            'terms'=> $resource_topic,
+            'field'=> 'slug',
+        );
+        array_push($rty,$tax);
+    }
+
+    /*if(!empty($resource_type) || empty($resource_topic)){
+        $rty;
     }
     
+    if(empty($resource_type) || !empty($resource_topic)){
+        $rty;
+    }*/
+
+
     $args = array(
         'post_type' => 'resource',
+        'post_status'=>'publish',
         'posts_per_page' => -1,
-        'tax_query' => $tax,
+        //'s'=> $search ? $search : '',
+        'tax_query' => $rty,
     );
+
+    print_r($args);
 
     $query = new WP_Query($args);
 
     if($query->have_posts()){
         while($query->have_posts()){ 
-         $query->the_post();
-         echo get_the_title();
+         $query->the_post(); ?>
+         <div class="post-title"><?php the_title(); ?></div>
+       <?php }
+    }
+    elseif($resource_type=="" || $resource_topic==""|| $search==""){
+
+        $args = array(
+            'post_type' => 'resource',
+            'post_status'=>'publish',
+            'posts_per_page' => -1,
+        );
+        if($query->have_posts()){
+            while($query->have_posts()){ 
+                $query->the_post(); ?>
+                <div class="post-title"><?php the_title(); ?></div>
+            <?php }
         }
     }
+    wp_reset_postdata();
     die();
 }
