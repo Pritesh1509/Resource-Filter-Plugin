@@ -2,10 +2,7 @@
 
 $resource_type = get_terms( 'resource_type', array( 'hide_empty' => false) );
 $resource_topics = get_terms( 'resource_topic', array( 'hide_empty' => false) ); 
-
 ?>
-
-
 <div class="container">
     <div class="resource-container">
         <select name="resource_filter" id="r_filter">
