@@ -177,8 +177,6 @@ function resource_data(){
         'tax_query' => $rty,
     );
 
-    print_r($args);
-
     $query = new WP_Query($args);
 
     if($query->have_posts()){
