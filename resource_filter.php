@@ -160,14 +160,6 @@ function resource_data(){
         array_push($rty,$tax);
     }
 
-    /*if(!empty($resource_type) || empty($resource_topic)){
-        $rty;
-    }
-    
-    if(empty($resource_type) || !empty($resource_topic)){
-        $rty;
-    }*/
-
 
     $args = array(
         'post_type' => 'resource',
