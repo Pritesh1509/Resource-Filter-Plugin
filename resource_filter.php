@@ -135,12 +135,11 @@ add_action('wp_ajax_nopriv_resource_data', 'resource_data');
 function resource_data(){
     $resource_type = $_REQUEST['resource_type'];
     $resource_topic = $_REQUEST['resource_topic'];
-    $search = $_REQUEST['search'];
+
 
     $tax = array('relation'=>'OR');
 
     $rty = array();
-    //$rto = array();
 
     if($resource_type!=""){
         $tax[] = array(
@@ -165,7 +164,6 @@ function resource_data(){
         'post_type' => 'resource',
         'post_status'=>'publish',
         'posts_per_page' => -1,
-        //'s'=> $search ? $search : '',
         'tax_query' => $rty,
     );
 
@@ -177,18 +175,20 @@ function resource_data(){
          <div class="post-title"><?php the_title(); ?></div>
        <?php }
     }
-    elseif($resource_type=="" || $resource_topic==""|| $search==""){
+    else{
+        if($resource_type=="" || $resource_topic==""){
 
-        $args = array(
-            'post_type' => 'resource',
-            'post_status'=>'publish',
-            'posts_per_page' => -1,
-        );
-        if($query->have_posts()){
-            while($query->have_posts()){ 
-                $query->the_post(); ?>
-                <div class="post-title"><?php the_title(); ?></div>
-            <?php }
+            $args = array(
+                'post_type' => 'resource',
+                'post_status'=>'publish',
+                'posts_per_page' => -1,
+            );
+            if($query->have_posts()){
+                while($query->have_posts()){ 
+                    $query->the_post(); ?>
+                    <div class="post-title"><?php the_title(); ?></div>
+                <?php }
+            }
         }
     }
     wp_reset_postdata();
