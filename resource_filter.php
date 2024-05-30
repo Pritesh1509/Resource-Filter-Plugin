@@ -186,7 +186,7 @@ function resource_data(){
             if($query->have_posts()){
                 while($query->have_posts()){ 
                     $query->the_post(); ?>
-                    <div class="post-title"><?php the_title(); ?></div>
+                    <div class="post-title"><h3><?php the_title(); ?></h3></div>
                 <?php }
             }
         }
